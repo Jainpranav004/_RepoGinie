@@ -1,291 +1,191 @@
-# RepoGPT
+# 🔍 RepoGinie
 
-RepoGPT is a Retrieval Augmented Generation (RAG) based developer tool that allows users to **ask questions about any GitHub repository** and receive answers grounded in the actual codebase.
+> **Ask questions. Get answers. Understand any codebase — instantly.**
 
-Instead of manually reading hundreds of files, RepoGPT indexes the repository, retrieves the most relevant code sections, and uses a language model to explain the logic in natural language.
-
-The goal of RepoGPT is to make **understanding unfamiliar codebases faster and easier for developers.**
+RepoGinie is a Retrieval Augmented Generation (RAG) powered developer tool that lets you have a conversation with any GitHub repository. Instead of spending hours manually tracing through hundreds of files, RepoGinie indexes the codebase, retrieves the most relevant code sections, and explains the logic in plain language — grounded in the actual implementation.
 
 ---
 
-# What RepoGPT Can Do
+## ✨ What Can You Ask?
 
-RepoGPT enables developers to:
+```
+"What does this repository do?"
+"Explain the authentication flow."
+"Where is the database connection defined?"
+"Which file handles API routing?"
+"Walk me through the architecture."
+```
 
-* Understand large repositories quickly
-* Ask questions about specific parts of the code
-* Discover where important logic lives
-* Get architecture explanations of projects
-* Navigate unfamiliar codebases faster
-
-Example questions users can ask:
-
-* What does this repository do
-* Explain the authentication flow
-* Where is the database connection defined
-* Which file handles API routing
-* Explain the architecture of this project
-
-The system retrieves relevant code snippets and uses them as context for the model before generating an answer.
+RepoGinie retrieves the relevant code and answers from it — not from guesswork.
 
 ---
 
-# Core Idea
+## 🧠 How It Works
 
-Large Language Models cannot read entire repositories due to context limits. RepoGPT solves this using **Retrieval Augmented Generation (RAG).**
+Large Language Models can't read entire repositories — context windows have limits. RepoGinie solves this with **Retrieval Augmented Generation (RAG)**:
 
-Instead of feeding the entire repository to the model, RepoGPT:
+```
+GitHub Repository URL
+        ↓
+  Fetch files via GitHub API
+        ↓
+  Filter relevant code files
+        ↓
+   Split files into chunks
+        ↓
+   Generate vector embeddings
+        ↓
+    Store in Qdrant Vector DB
+```
 
-1. Extracts files from a GitHub repository
-2. Breaks them into smaller chunks
-3. Converts chunks into embeddings
-4. Stores embeddings in a vector database
-5. Retrieves relevant chunks when a question is asked
-6. Sends those chunks to the language model to generate an answer
+When you ask a question:
 
-This ensures responses are **grounded in the actual code.**
+```
+       Your Question
+            ↓
+  Embed the question as a vector
+            ↓
+  Search Qdrant for similar chunks
+            ↓
+  Retrieve the most relevant code
+            ↓
+   Send context + question to LLM
+            ↓
+      ✅ Grounded answer returned
+```
 
 ---
 
-# System Architecture
-
-High level architecture:
+## 🏗️ System Architecture
 
 ```
 User
  ↓
 Next.js Frontend
  ↓
-FastAPI Backend (RAG Pipeline)
+FastAPI Backend  ←── RAG Pipeline
  ↓
-GitHub API (Repository Files)
+GitHub API
  ↓
-Code Chunking
- ↓
-Embedding Generation
+Code Chunking & Embedding
  ↓
 Qdrant Vector Database
  ↓
 Similarity Search
  ↓
-LLM (OpenAI / Gemini / Anthropic)
+LLM  (OpenAI / Gemini / Anthropic)
  ↓
 Answer Returned to User
 ```
 
 ---
 
-# RAG Pipeline
+## 🛠️ Tech Stack
 
-RepoGPT works in two main stages.
+| Layer | Technology | Role |
+|-------|------------|------|
+| **Frontend** | Next.js | UI, chat interface, API key input |
+| **Backend** | FastAPI (Python) | RAG pipeline, embeddings, retrieval |
+| **Vector DB** | Qdrant Cloud | Store & search code embeddings |
+| **Ingestion** | GitHub API | Fetch repo files without cloning |
+| **LLM** | OpenAI / Gemini / Claude | Generate natural language answers |
 
-## Repository Indexing
-
-When a user submits a repository:
-
-```
-GitHub Repository URL
-        ↓
-Fetch files using GitHub API
-        ↓
-Filter relevant code files
-        ↓
-Split files into chunks
-        ↓
-Generate embeddings
-        ↓
-Store embeddings in Qdrant
-```
-
-The repository is now indexed and searchable.
+> Python powers the backend because it has the strongest ecosystem for AI and retrieval systems.
 
 ---
 
-## Query and Retrieval
+## 🤖 Supported LLM Providers
 
-When a user asks a question:
+RepoGinie supports multiple model providers. You bring your own API key — it is **never stored**.
 
-```
-User Question
-      ↓
-Convert question into embedding
-      ↓
-Search Qdrant for similar code chunks
-      ↓
-Retrieve top relevant chunks
-      ↓
-Send chunks + question to LLM
-      ↓
-Generate explanation
-```
+- **OpenAI** (GPT-4 and variants)
+- **Google Gemini**
+- **Anthropic Claude**
 
-The model answers using the retrieved code context.
+Your key is used only for the current session and discarded when it ends. No billing risk on our end. Full control on yours.
 
 ---
 
-# Tech Stack
+## 🔐 Security Model
 
-## Frontend
-
-Next.js
-
-Responsibilities:
-
-* User interface
-* Repository input
-* Chat interface
-* API key input
-* Display answers and sources
-
----
-
-## Backend
-
-FastAPI (Python)
-
-Responsibilities:
-
-* RAG pipeline
-* GitHub repository ingestion
-* Code chunking
-* Embedding generation
-* Retrieval logic
-* LLM request handling
-
-Python is used because it has the strongest ecosystem for AI and retrieval systems.
-
----
-
-## Vector Database
-
-Qdrant Cloud
-
-Responsibilities:
-
-* Store embeddings
-* Perform similarity search
-* Retrieve relevant code chunks
-
-Each stored vector includes metadata such as:
-
-* repository name
-* file path
-* chunk id
-* programming language
-
----
-
-## Repository Ingestion
-
-GitHub API
-
-Responsibilities:
-
-* Fetch repository file structure
-* Retrieve file contents
-* Filter useful code files
-
-Using the GitHub API avoids cloning repositories and reduces server storage usage.
-
----
-
-## LLM Providers
-
-RepoGPT supports multiple providers.
-
-Users paste their own API keys.
-
-Supported providers:
-
-* OpenAI
-* Google Gemini
-* Anthropic Claude
-
-API keys are **not stored** and are only used during the session.
-
-This allows users to control their own API usage.
-
----
-
-# Security Model
-
-RepoGPT does not store API keys.
-
-Workflow:
-
-1. User pastes their API key in the UI
-2. The key is used only for that session
-3. Requests are sent to the chosen model provider
+1. You paste your API key into the UI
+2. It is used **only for that session**
+3. Requests are sent directly to your chosen model provider
 4. The key is discarded when the session ends
 
-This ensures:
-
-* No billing risk for the platform
-* Users control their own API usage
+No keys stored. No surprises.
 
 ---
 
-# Features
+## 📦 Vector Storage
 
-Core features include:
+Each indexed code chunk is stored in **Qdrant Cloud** with rich metadata:
 
-* Ask questions about any GitHub repository
-* Code aware retrieval
-* Semantic search over code
-* Multi model support
-* Source aware answers
-* Developer friendly chat interface
+- `repository` — the source repo
+- `file_path` — exact location in the codebase
+- `chunk_id` — position within the file
+- `language` — programming language detected
 
-Optional advanced features may include:
-
-* Display retrieved code chunks
-* Show file references in answers
-* Similarity scores for retrieved context
-* Repository architecture explanations
+This enables fast, semantic, language-aware retrieval at query time.
 
 ---
 
-# Example Use Case
+## ⚡ Features
 
-A developer finds a new repository but does not want to manually read hundreds of files.
+- 🗂️ **Index any public GitHub repository**
+- 🔎 **Semantic code search** — finds relevant chunks by meaning, not keywords
+- 🤖 **Multi-model support** — swap between OpenAI, Gemini, and Claude
+- 💬 **Developer-friendly chat interface**
+- 📎 **Source-aware answers** — responses cite the actual files they came from
+- 🏛️ **Architecture explanations** — understand the full project structure at a glance
 
-They paste the repository link into RepoGPT and ask:
+---
+
+## 🚀 Example Use Case
+
+A developer discovers a new open-source project but doesn't want to read 300 files.
+
+They paste the repo URL into RepoGinie and ask:
 
 ```
-Explain the authentication flow in this project
+Explain the authentication flow in this project.
 ```
 
-RepoGPT retrieves the relevant code files and generates a structured explanation based on the actual implementation.
+RepoGinie retrieves the relevant files — middleware, token validators, route guards — and generates a clear, structured explanation based on the **actual code**, not documentation that might be out of date.
 
 ---
 
-# Future Improvements
+## 🔭 Roadmap
 
-Possible future enhancements include:
-
-* repository caching to avoid re indexing
-* better code aware chunking
-* hybrid search combining keyword and vector search
-* code graph based retrieval
-* repository architecture visualization
-* multi repository querying
+- [ ] **Repository caching** — skip re-indexing unchanged repos
+- [ ] **Smarter chunking** — code-aware splitting that respects function boundaries
+- [ ] **Hybrid search** — combine keyword and vector search for higher precision
+- [ ] **Code graph retrieval** — follow call graphs and import trees
+- [ ] **Architecture visualization** — auto-generate diagrams of project structure
+- [ ] **Multi-repo querying** — ask questions across multiple codebases at once
 
 ---
 
-# Project Goal
+## 🎯 Project Goal
 
-RepoGPT aims to demonstrate how Retrieval Augmented Generation can be applied to **real developer workflows**.
+RepoGinie demonstrates how **Retrieval Augmented Generation** can be applied to real developer workflows — not just toy demos.
 
-The project showcases:
+It showcases:
 
-* RAG system design
-* vector database usage
-* code retrieval techniques
-* multi model LLM integration
-* scalable AI architecture
+- End-to-end RAG system design
+- Practical vector database integration
+- Code-specific retrieval strategies
+- Multi-provider LLM integration
+- Scalable, production-ready AI architecture
 
 ---
 
-# License
+## 📄 License
 
-MIT License
+MIT — free to use, fork, and build upon.
+
+---
+
+<p align="center">
+  <em>Built for developers who'd rather understand code than just read it.</em>
+</p>
