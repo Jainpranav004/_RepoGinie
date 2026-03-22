@@ -221,7 +221,7 @@ function ChatContent() {
               >
                 <div
                   className={`max-w-2xl px-6 py-4 rounded-2xl ${message.role === "user"
-                    ? "bg-white-800 text-white"
+                    ? "bg-zinc-800 text-white"
                     : "bg-neutral-900 border border-neutral-800 text-neutral-100"
                     }`}
                 >

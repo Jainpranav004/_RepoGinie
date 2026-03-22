@@ -14,7 +14,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "RepoGPT - AI Powered GitHub Repository Explorer",
+  title: "RepoGinie - AI Powered GitHub Repository Explorer",
   description:
     "Ask questions about any GitHub repository using AI-powered retrieval",
 };
