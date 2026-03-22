@@ -51,7 +51,7 @@ export default function Home() {
               Understand any codebase<br />in seconds.
             </h1>
             <p className="text-xl md:text-2xl text-zinc-600 max-w-2xl leading-relaxed font-light font-heading">
-              RepoGPT uses AI to index, analyze, and answer questions about public GitHub repositories instantly.
+              RepoGinie uses AI to index, analyze, and answer questions about public GitHub repositories instantly.
             </p>
           </div>
 
